@@ -2,6 +2,7 @@ import sys
 
 lines = []
 intline = []
+
 with open(sys.argv[2]) as f:
     lines.extend(f.read().splitlines())
 

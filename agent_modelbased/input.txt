@@ -1,0 +1,4 @@
+A,Human
+B,Human
+B,Zombie
+B,Human
