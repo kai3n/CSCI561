@@ -1,5 +1,5 @@
 graph = []
-with open("testcases/t1.txt", "rt") as fi:
+with open("testcases/t8.txt", "rt") as fi:
     input_list = [line.rstrip() for line in fi]
 print("input_list: {}".format(input_list))
 method, fuel, s, d = input_list[0], input_list[1], input_list[2], input_list[3]
@@ -58,5 +58,20 @@ def dfs(graph, s, d):
                         stack.append((n, path + [vertex], weight + int(w)))
     return "No Path"
 
-print(bfs(graph, s, d))
+def ucs(graph, s, d):
+    import Queue as Q
+    queue = Q.PriorityQueue()
+    queue.put((0, s, []))
+    while queue:
+        (weight, vertex, path) = queue.get()
+        if vertex not in set(path):
+            if int(fuel) >= weight:
+                if vertex == d:
+                    return '-'.join(path + [vertex]) + " " + str(int(fuel) - weight)
+                else:
+                    for n, w in graph[char_dic[vertex]][1:]:
+                        queue.put((weight + int(w), n, path + [vertex]))
+    return "No Path"
+
+print(ucs(graph, s, d))
 # print(dfs(graph, s, d))
