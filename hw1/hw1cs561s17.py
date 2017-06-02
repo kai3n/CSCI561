@@ -19,7 +19,8 @@ class DeliveryDrone(object):
                         return '-'.join(path + [vertex]) + " " + str(int(self.fuel) - weight)
                     else:
                         for n, w in self.graph[char_dic[vertex]][1:]:
-                            queue.append((n, path + [vertex], weight + int(w)))
+                            if n not in set(path):
+                                queue.append((n, path + [vertex], weight + int(w)))
         return "No Path"
 
     def dfs(self, s, d):
@@ -32,7 +33,8 @@ class DeliveryDrone(object):
                         return '-'.join(path + [vertex]) + " " + str(int(self.fuel) - weight)
                     else:
                         for n, w in self.graph[char_dic[vertex]][1:][::-1]:
-                            stack.append((n, path + [vertex], weight + int(w)))
+                            if n not in set(path):
+                                stack.append((n, path + [vertex], weight + int(w)))
         return "No Path"
 
     def ucs(self, s, d):
@@ -43,10 +45,11 @@ class DeliveryDrone(object):
             if vertex not in set(path):
                 if int(self.fuel) >= weight:
                     if vertex == d:
-                        return '-'.join(path + [vertex]) + " " + str(int(self.fuel) - weight)
+                        return '-'.join(([vertex] + path)[::-1]) + " " + str(int(self.fuel) - weight)
                     else:
                         for n, w in self.graph[char_dic[vertex]][1:]:
-                            queue.put((weight + int(w), n, path + [vertex]))
+                            if n not in set(path):
+                                queue.put((weight + int(w), n, [vertex] + path))
         return "No Path"
 
 
