@@ -1,5 +1,5 @@
 from copy import deepcopy
-
+import time
 
 with open('testcases/t5.txt', 'rt') as fi:
     input_list = [line.rstrip() for line in fi]
@@ -32,13 +32,16 @@ print preferences_of_player2
 
 # build a graph.
 char_dic = {}
+node_list = []
 graph = [[False for _ in range(len(input_list)-5)] for _ in range(len(input_list)-5)]
 index = 0
 for node_line in input_list[5:]:
     node_line = node_line.replace(":", "").replace(",", "").split()
     char_dic[node_line[0]] = index
+    node_list.append(node_line[0])
     index += 1
-
+print(char_dic)
+print node_list
 for node_line in input_list[5:]:
     node_line = node_line.replace(":", "").replace(",", "").split()
     print(node_line)
@@ -56,7 +59,17 @@ print graph
 print "========================build success========================"
 
 def isTerminal(state):
-    return False
+    for i in range(len(char_dic)):
+        constrained_color = set()
+        if not state[i][i]:  # uncolored area
+            for j in range(len(char_dic)):
+                if j == i:
+                    continue
+                if state[i][j] and (type(state[j][j]) == type(list())):  # adjacent area
+                    constrained_color.add(state[j][j][0])
+            if len(set(colors) - constrained_color) != 0:
+                return False
+    return True
 
 def utility(state):
     score_of_player1 = 0
@@ -68,33 +81,11 @@ def utility(state):
                 score_of_player1 += int(preferences_of_player1.get(state[i][i][0]))
             else:  # player2
                 score_of_player2 += int(preferences_of_player2.get(state[i][i][0]))
-    # print(score_of_player1-score_of_player2)
+    #print'score_of_player1-score_of_player2:',(score_of_player1-score_of_player2)
     # print state
     return score_of_player1-score_of_player2
 
 def make_child(state, player):
-    # states = list()
-    # for index in range(len(char_dic)):
-    #     if state[index][index]:  # find colored area
-    #         for i in range(index+1, len(char_dic)):
-    #             if state[index][i] and (type(state[i][i]) != type(list())):  # adjacent nodes and not colored
-    #                 constrained_color = set()
-    #                 for j in range(len(char_dic)):  # each of adjacent nodes
-    #                     if j == i:  # exclude self
-    #                         continue
-    #                     if state[i][j] and (type(state[j][j]) == type(list())):  # already colored
-    #                         constrained_color.add(state[j][j][0])
-    #                 # print set(colors) - constrained_color
-    #
-    #                 for color in set(colors)-constrained_color:  # TODO: consider the order again
-    #                     from copy import deepcopy
-    #                     tmp_state = deepcopy(state)
-    #                     tmp_state[i][i] = [color, player]
-    #                     print tmp_state
-    #
-    #                     states.append(tmp_state)
-    # print(len(states))
-    # print ''
     states = list()
     for i in range(len(char_dic)):
         constrained_color = set()
@@ -106,31 +97,47 @@ def make_child(state, player):
             for color in set(colors) - constrained_color:  # TODO: consider the order again
                 tmp_state = deepcopy(state)
                 tmp_state[i][i] = [color, player]
-                print tmp_state
+                # print tmp_state
                 states.append(tmp_state)
-    print len(states)
+    # print len(states)
     return states
 
-def minimax(state, depth, maximizingPlayer):
-    if depth == 0 or isTerminal(state):
+def minimax(state, depth, alpha, beta, maximizingPlayer):
+    if depth == maximum_depth:# or isTerminal(state):
         return utility(state)
 
     if maximizingPlayer:
         best_value = float('-inf')
         for child in make_child(state, '1'):
-            v = minimax(child, depth-1, False)
-            best_value = max(best_value, v)
-        # print "max value", best_value
+
+            print depth, best_value, alpha, beta  # add node visit log here
+
+            v = minimax(child, depth+1, alpha, beta, False)
+            if best_value < v:
+                best_value = v
+                print depth, best_value, alpha, beta  # update log
+            if best_value >= beta:
+                return best_value
+            alpha = max(alpha, best_value)
+
+        #print "max value", best_value
         return best_value
     else:
         best_value = float('inf')
         for child in make_child(state, '2'):
-            v = minimax(child, depth-1, True)
-            best_value = min(best_value, v)
+
+            print depth, best_value, alpha, beta  # add node visit log here
+
+            v = minimax(child, depth+1, alpha, beta, True)
+            if best_value > v:
+                best_value = v
+                print depth, best_value, alpha, beta  # update log
+            if best_value <= alpha:
+                return best_value
+            beta = min(beta, best_value)
         # print "min value", best_value
         return best_value
 
-
-#make_child(graph, '1')
-
-print(minimax(graph, maximum_depth, True))
+alpha = float('-inf')
+beta = float('inf')
+print(minimax(graph, 0, alpha, beta, True))
