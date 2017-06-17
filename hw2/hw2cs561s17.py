@@ -1,7 +1,7 @@
 from copy import deepcopy
 import time
 
-with open('testcases/t2.txt', 'rt') as fi:
+with open('testcases/t6.txt', 'rt') as fi:
     input_list = [line.rstrip() for line in fi]
 
 colors = input_list[0].replace(' ', '').split(',')
@@ -34,14 +34,14 @@ print 'preferences_of_player2: ', preferences_of_player2
 # build a graph.
 char_dic = {}
 node_list = []
-graph = [[False for _ in range(len(input_list)-5)] for _ in range(len(input_list)-5)]
+graph = [[False for _ in xrange(len(input_list)-5)] for _ in xrange(len(input_list)-5)]
 index = 0
 for node_line in input_list[5:]:
     node_line = node_line.replace(":", "").replace(",", "").split()
     node_list.append(node_line[0])
 
 node_list = sorted(node_list)
-for i in range(len(node_list)):
+for i in xrange(len(node_list)):
     char_dic[node_list[i]] = i
 print 'node_list: ', node_list
 print 'char_dic: ', char_dic
@@ -64,10 +64,10 @@ print "========================build success========================"
 logs = []
 
 def isTerminal(state):
-    for i in range(len(char_dic)):
+    for i in xrange(len(char_dic)):
         constrained_color = set()
         if not state[i][i]:  # uncolored area
-            for j in range(len(char_dic)):
+            for j in xrange(len(char_dic)):
                 if j == i:
                     continue
                 if state[i][j] and (type(state[j][j]) == type(list())):  # adjacent area
@@ -80,7 +80,7 @@ def utility(state, current_node, current_color, depth, value, alpha, beta):
     score_of_player1 = 0
     score_of_player2 = 0
 
-    for i in range(len(char_dic)):
+    for i in xrange(len(char_dic)):
         if state[i][i]:
             if state[i][i][1] == '1':  # player1
                 score_of_player1 += int(preferences_of_player1.get(state[i][i][0]))
@@ -92,10 +92,10 @@ def utility(state, current_node, current_color, depth, value, alpha, beta):
 
 def make_child(state, player):
     states = list()
-    for i in range(len(char_dic)):
+    for i in xrange(len(char_dic)):
         constrained_color = list()
         if not state[i][i]:  # uncolored area
-            for j in range(len(char_dic)):
+            for j in xrange(len(char_dic)):
                 if state[i][j]:  # adjacent areas
                     if state[j][j]:  # colored area
                         constrained_color.append(state[j][j][0])
@@ -159,6 +159,8 @@ def minimax(state, current_node, current_color, depth, value, alpha, beta, maxim
 alpha = float('-inf')
 beta = float('inf')
 value = float('-inf')
+import time
+start = time.time()
 utility = minimax(graph, initial_map_color[-1][0], initial_map_color[-1][1], 0, value, alpha, beta, True)
 best_node_of_first_move = action_node[0]
 best_color_of_first_move = action_node[1]
@@ -170,7 +172,7 @@ for log in logs:
 content = content[:-1]
 
 print(content)
-with open('testcases/output_t2.txt', 'rt') as fi:
+with open('testcases/output_t6.txt', 'rt') as fi:
     output = fi.read()
 
 if output == content:
@@ -178,4 +180,5 @@ if output == content:
 else:
     print('Sorry!')
 
-
+finish = time.time() - start
+print(finish)
