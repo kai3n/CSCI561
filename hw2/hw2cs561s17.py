@@ -44,10 +44,10 @@ class GameTreeSearch(object):
 
     def make_child(self, state):
         actions = list()
-        for i in list(xrange(self.node_len)):
+        for i in xrange(self.node_len):
             constrained_color = set()
             if not state[i][i]:  # uncolored area
-                for j in list(xrange(self.node_len)):
+                for j in xrange(self.node_len):
                     if state[i][j]:  # adjacent areas
                         if state[j][j]:  # colored area
                             constrained_color.add(state[j][j][0])
@@ -109,6 +109,7 @@ class GameTreeSearch(object):
             return best_value
 
 def main():
+    # start = time.time()
     with open(sys.argv[2], 'rt') as fi:
         input_list = [line.rstrip() for line in fi]
 
@@ -172,17 +173,18 @@ def main():
         content += log + '\n'
     content = content[:-1]
 
+    # print time.time() - start
     with open('output.txt', 'wt') as fo:
         fo.write(content)
 
+    # with open('testcases/output_t6.txt', 'rt') as fi:
+    #     output = fi.read()
     # if output == content:
     #     print('Good Job!')
     # else:
     #     print('Sorry!')
-    #
+    # print time.time() - start
+
 
 if __name__ == '__main__':
     main()
-    """
-    Question1: Is there any cases that has no initial map coloring?
-    """
